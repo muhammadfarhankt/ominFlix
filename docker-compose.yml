@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db 
+      - DB_PORT=5432
+      - DB_NAME=omniflix_db
+      - DB_USER=omniflix_user
+      - DB_PASS=omniflix_password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=omniflix_db
+      - POSTGRES_USER=omniflix_user
+      - POSTGRES_PASSWORD=omniflix_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
