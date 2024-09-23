@@ -1,6 +1,14 @@
 # Omniflix Block Indexer
 
-This repository contains the block indexer for the Omniflixhub blockchain. The indexer is responsible for storing block details in a Postgres database and providing an API to query the data.
+This project implements a block indexer for the Omniflixhub blockchain using GoLang. The indexer fetches block data from the Omniflixhub RPC API, stores it in a PostgreSQL database, and provides an API endpoint to access the indexed data.
+
+## Features
+- Fetches block data concurrently using goroutines.
+- Stores block height, block ID, proposer address, number of transactions, and other relevant details in the database.
+- Provides an API endpoint (/block/:height) to fetch block details by block height.
+- Handles errors gracefully and includes basic error handling for API requests and database interactions.
+- Uses a semaphore to limit concurrent API requests and prevent overloading the blockchain nodes.
+- Includes timestamps (created_at, updated_at) for tracking changes in the database.
 
 ## Table of Contents
 - [Project Overview](#project-overview)
@@ -28,7 +36,7 @@ The indexer processes block data from the Omniflixhub blockchain and stores the 
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/username/omniFlix.git
+    git clone https://github.com/muhammadfarhankt/omniFlix.git
     cd omniFlix
     ```
 
@@ -119,16 +127,22 @@ The `Makefile` contains useful commands to manage the project. Here are some exa
 
 ## API Documentation
 
-The API provides several endpoints to interact with the block data. Below is an example of how to fetch block details:
+The API provides a single endpoint:
 
-- `GET /api/block/{block_id}`: Fetch details of a specific block.
+*   **`GET /block/:height`**
 
-Example request:
-```bash
-curl http://localhost:8080/block/14041989
-```
+    Fetches the details of the block with the specified height.
 
-Response:
+    **Parameters:**
+
+    *   `height`: The height of the block (integer).
+
+    **Response:**
+
+    *   If the block is found in the database or can be fetched from the blockchain, the API returns a JSON object with the block details (height, block ID, proposer address, number of transactions, timestamps, and other details).
+    *   If there's an error, the API returns a JSON object with an error message.
+ 
+    Response:
 ```plaintext
 {
   "height": 14041989,
@@ -144,3 +158,21 @@ Response:
   "details": null
 }
 ```
+
+
+## Code Structure
+
+The project is organized into the following packages:
+
+*   `api`: Handles the API endpoint and request handling.
+*   `db`: Manages the database connection and table creation.
+*   `indexer`: Contains the core logic for fetching and indexing block data.
+
+## Further Improvements
+
+*   More robust error handling: Implement retry mechanisms, exponential backoff, and more informative error responses.
+*   API documentation: Generate detailed API documentation using a tool like Swagger.
+*   Data validation: Add validation for the data fetched from the blockchain APIs.
+*   Caching: Implement caching to improve performance for frequently accessed blocks.
+*   Metrics: Add metrics to monitor the indexer's performance and health.
+*   Testing: Write unit and integration tests to ensure code quality and reliability.
